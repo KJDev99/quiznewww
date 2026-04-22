@@ -1,14 +1,556 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Collective Nouns Quiz</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f0e8;
+            --card: #ffffff;
+            --accent: #2d5016;
+            --accent2: #7ab648;
+            --wrong: #c0392b;
+            --correct: #27ae60;
+            --text: #1a1a1a;
+            --muted: #888;
+            --border: #ddd5c0;
+            --highlight: #fef9ec;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            background-image: radial-gradient(circle at 20% 50%, rgba(122, 182, 72, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(45, 80, 22, 0.06) 0%, transparent 40%);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px 60px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: var(--muted);
+            font-size: 0.88rem;
+            letter-spacing: 0.5px;
+        }
+
+        .leaf {
+            display: inline-block;
+            margin: 0 4px;
+            opacity: 0.6;
+        }
+
+        #score-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.82rem;
+            color: var(--muted);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        #score-bar .val {
+            color: var(--accent);
+            font-size: 1rem;
+        }
+
+        #progress {
+            width: min(600px, 100%);
+            height: 6px;
+            background: var(--border);
+            border-radius: 99px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+            border-radius: 99px;
+            transition: width 0.5s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        #quiz-container {
+            width: min(660px, 100%);
+        }
+
+        .card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 36px 36px 28px;
+            box-shadow: 0 4px 24px rgba(45, 80, 22, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+            border-radius: 16px 16px 0 0;
+        }
+
+        .question-num {
+            font-size: 0.72rem;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .animal-box {
+            background: var(--highlight);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .animal-label {
+            font-size: 0.72rem;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .animal-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+
+        .animal-uz {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .question-hint {
+            font-size: 0.84rem;
+            color: var(--muted);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: var(--highlight);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 16px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 1.3;
+            transition: all 0.15s ease;
+            letter-spacing: 0.2px;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent2);
+            background: #f0f8e8;
+            color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(122, 182, 72, 0.2);
+        }
+
+        .option-btn.correct {
+            border-color: var(--correct);
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--correct);
+            animation: pop 0.35s ease;
+        }
+
+        .option-btn.wrong {
+            border-color: var(--wrong);
+            background: rgba(192, 57, 43, 0.07);
+            color: var(--wrong);
+            animation: shake 0.35s ease;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            transform: none !important;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            50% {
+                transform: translateX(6px);
+            }
+
+            75% {
+                transform: translateX(-4px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        #result-label {
+            margin-top: 18px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            min-height: 20px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        #result-label.correct {
+            color: var(--correct);
+        }
+
+        #result-label.wrong {
+            color: var(--wrong);
+        }
+
+        #next-btn {
+            display: none;
+            margin: 20px auto 0;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 13px 36px;
+            border-radius: 99px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(45, 80, 22, 0.25);
+        }
+
+        #next-btn:hover {
+            background: #3d6e1f;
+            transform: translateY(-1px);
+        }
+
+        /* Final screen */
+        #final-screen {
+            display: none;
+            text-align: center;
+            padding: 52px 36px;
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            width: min(660px, 100%);
+            box-shadow: 0 4px 24px rgba(45, 80, 22, 0.08);
+        }
+
+        #final-screen .emoji {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        #final-screen h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .big-score {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: var(--accent2);
+            line-height: 1;
+            margin: 16px 0;
+        }
+
+        #final-msg {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        #restart-btn {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 13px 32px;
+            border-radius: 99px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+
+        #restart-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+    </style>
 </head>
 
 <body>
 
+    <header>
+        <h1><span class="leaf">🌿</span> Collective Nouns <span class="leaf">🌿</span></h1>
+        <p>To'g'ri collective noun (to'da/guruh so'zi)ni tanlang</p>
+    </header>
+
+    <div id="score-bar">
+        <span>SAVOL <span class="val" id="q-num">1</span>/20</span>
+        &nbsp;·&nbsp;
+        <span>TO'G'RI: <span class="val" id="correct-count">0</span></span>
+    </div>
+
+    <div id="progress">
+        <div id="progress-fill" style="width:5%"></div>
+    </div>
+
+    <div id="quiz-container">
+        <div class="card" id="question-card">
+            <div class="question-num" id="q-label">SAVOL 01 / 20</div>
+
+            <div class="animal-box">
+                <div class="animal-label">Inglizcha</div>
+                <div class="animal-name" id="animal-en"></div>
+                <div class="animal-uz" id="animal-uz"></div>
+            </div>
+
+            <div class="question-hint">— To'g'ri collective noun qaysi?</div>
+            <div class="options-grid" id="options"></div>
+            <div id="result-label"></div>
+            <button id="next-btn" onclick="nextQuestion()">Keyingi →</button>
+        </div>
+
+        <div id="final-screen">
+            <div class="emoji" id="final-emoji">🏆</div>
+            <h2>Yakunlandi!</h2>
+            <div class="big-score" id="final-score"></div>
+            <p id="final-msg"></p>
+            <button id="restart-btn" onclick="startQuiz()">🔄 Qaytadan boshlash</button>
+        </div>
+    </div>
+
+    <script>
+        // Format: { en: "English name", uz: "O'zbekcha", answer: "a pack of", allWrong: used from pool }
+        const allItems = [
+            { en: "Dogs", uz: "itlar to'dasi", answer: "a pack of" },
+            { en: "Cattle", uz: "qoramollar podasi", answer: "a herd of" },
+            { en: "Sheep", uz: "qo'ylar podasi", answer: "a flock of" },
+            { en: "Bees / Locusts", uz: "asalarilar/chigirtkalar to'dasi", answer: "a swarm of" },
+            { en: "Birds", uz: "qushlar galasi", answer: "a flock of" },
+            { en: "Lions", uz: "sherlar to'dasi", answer: "a pride of" },
+            { en: "Fish / Sardines", uz: "baliqlar to'dasi", answer: "a shoal / school of" },
+            { en: "Dolphins / Whales", uz: "delfinlar/kitlar guruhi", answer: "a pod of" },
+            { en: "Monkeys / Baboons", uz: "maymunlar to'dasi", answer: "a troop of" },
+            { en: "Activity", uz: "faoliyatning birdan kuchayishi", answer: "a flurry of" },
+            { en: "Emotion", uz: "hissiyotning qisqa chaqnashi", answer: "a flicker of" },
+            { en: "Hope (kuchli belgi)", uz: "umidning kichik uchquni", answer: "a glimmer of" },
+            { en: "Sadness", uz: "ozgina qayg'u", answer: "a touch of" },
+            { en: "Emotions (barchasi)", uz: "barcha turdagi his-tuyg'ular", answer: "the whole gamut of" },
+            { en: "Genius", uz: "dahoning birdan paydo bo'lgan g'oyasi", answer: "a stroke of" },
+            { en: "Interest / Excitement / Snow", uz: "qiziqish/hayajon/qorning birdan ko'payishi", answer: "a flurry of" },
+            { en: "Hope / Interest (qisqa)", uz: "umid/qiziqishning qisqa paydo bo'lishi", answer: "a flicker of" },
+            { en: "Light / Understanding", uz: "yorug'lik/tushunishning ozgina belgisi", answer: "a glimmer of" },
+            { en: "Humour / Irony", uz: "ozgina hazil/kinoya", answer: "a touch of" },
+            { en: "Class", uz: "ozgina nafislik (yuqori daraja)", answer: "a touch of" },
+            { en: "Luck", uz: "kutilmagan omad", answer: "a stroke of" },
+            { en: "Work (inkorda)", uz: "ishlashni yoqtirmaslik", answer: "a stroke of" },
+            { en: "Bread", uz: "katta bo'lak non", answer: "a hunk of" },
+            { en: "Garlic", uz: "sarimsoq bo'laklari", answer: "cloves of" },
+            { en: "Rice (taglik)", uz: "guruch usti (tagiga yoyilgan)", answer: "a bed of" },
+            { en: "Butter", uz: "kichik bo'lak sariyog'", answer: "a knob of" },
+            { en: "Cream (katta qoshiq)", uz: "katta qoshiq qaymoq", answer: "a dollop of" },
+            { en: "Brandy", uz: "ozgina brendi", answer: "a drop of" },
+            { en: "Cream (bir oz)", uz: "bir oz qaymoq", answer: "a dash of" },
+            { en: "Cinnamon", uz: "sepilgan ozgina dolchin", answer: "a sprinkling of" },
+        ];
+
+        // All unique answer options (pool for wrong answers)
+        const allAnswers = [...new Set(allItems.map(i => i.answer))];
+
+        let questions = [];
+        let current = 0;
+        let correctCount = 0;
+        let answered = false;
+
+        function shuffle(arr) {
+            return [...arr].sort(() => Math.random() - 0.5);
+        }
+
+        function getWrongOptions(correctAnswer, count) {
+            const pool = allAnswers.filter(a => a !== correctAnswer);
+            return shuffle(pool).slice(0, count);
+        }
+
+        function startQuiz() {
+            const pool = shuffle(allItems).slice(0, 20);
+            questions = pool.map(q => {
+                const wrongs = getWrongOptions(q.answer, 3);
+                const opts = shuffle([q.answer, ...wrongs]);
+                return { ...q, options: opts };
+            });
+            current = 0;
+            correctCount = 0;
+            answered = false;
+            document.getElementById('final-screen').style.display = 'none';
+            document.getElementById('question-card').style.display = 'block';
+            updateScoreBar();
+            renderQuestion();
+        }
+
+        function updateScoreBar() {
+            document.getElementById('q-num').textContent = current + 1;
+            document.getElementById('correct-count').textContent = correctCount;
+            document.getElementById('progress-fill').style.width = ((current / 20) * 100 + 5) + '%';
+        }
+
+        function renderQuestion() {
+            answered = false;
+            const q = questions[current];
+            document.getElementById('q-label').textContent = `SAVOL ${String(current + 1).padStart(2, '0')} / 20`;
+            document.getElementById('animal-en').textContent = q.en;
+            document.getElementById('animal-uz').textContent = q.uz;
+            document.getElementById('result-label').textContent = '';
+            document.getElementById('result-label').className = '';
+            document.getElementById('next-btn').style.display = 'none';
+
+            const optDiv = document.getElementById('options');
+            optDiv.innerHTML = '';
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => selectAnswer(btn, opt, q.answer);
+                optDiv.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(btn, selected, correct) {
+            if (answered) return;
+            answered = true;
+
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            const label = document.getElementById('result-label');
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                label.textContent = '✓ To\'g\'ri!';
+                label.className = 'correct';
+                correctCount++;
+                document.getElementById('correct-count').textContent = correctCount;
+            } else {
+                btn.classList.add('wrong');
+                label.textContent = `✗ Noto'g'ri. To'g'ri javob: "${correct}"`;
+                label.className = 'wrong';
+                allBtns.forEach(b => {
+                    if (b.textContent === correct) b.classList.add('correct');
+                });
+            }
+
+            if (current < 19) {
+                document.getElementById('next-btn').style.display = 'block';
+            } else {
+                setTimeout(showFinal, 900);
+            }
+        }
+
+        function nextQuestion() {
+            current++;
+            updateScoreBar();
+            renderQuestion();
+        }
+
+        function showFinal() {
+            document.getElementById('question-card').style.display = 'none';
+            document.getElementById('progress-fill').style.width = '100%';
+            const fs = document.getElementById('final-screen');
+            fs.style.display = 'block';
+            document.getElementById('final-score').textContent = correctCount + ' / 20';
+            const pct = (correctCount / 20) * 100;
+            let emoji = '🌱', msg = '';
+            if (pct === 100) { emoji = '🏆'; msg = 'Mukammal! Siz collective nounlarni a\'lo bilasiz!'; }
+            else if (pct >= 80) { emoji = '🌟'; msg = 'Ajoyib natija! Juda yaxshi bilasiz.'; }
+            else if (pct >= 60) { emoji = '👍'; msg = 'Yaxshi! Lekin yana mashq qilish kerak.'; }
+            else if (pct >= 40) { emoji = '📚'; msg = 'Davom eting — yana o\'qing!'; }
+            else { emoji = '🌱'; msg = 'Ko\'proq o\'rganish kerak. Qaytadan urinib ko\'ring!'; }
+            document.getElementById('final-emoji').textContent = emoji;
+            document.getElementById('final-msg').textContent = msg;
+        }
+
+        startQuiz();
+    </script>
 </body>
 
 </html>
